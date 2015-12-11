@@ -25,37 +25,22 @@ var HelloWorld = React.createClass({
     // by default, the form will be sent to the server
     // but we want to handle it in JavaScript
     e.preventDefault();
-    /*this.setState({
-      numbers: this.state.numbers.concat(this.state.name),
-      name: ''
-    })*/
     request('PUT', '/items/create', {
         json: {item: this.state.name}
       }).getBody('utf8').then(JSON.parse).done(
         function (items) {
-          console.log(items);
+          this.setState({
+            name: '',
+            numbers: items
+          });
         }.bind(this),
         function (err) {
           console.log(err);
         }
-      );
-    request('GET', '/items').getBody('utf8').then(JSON.parse).done(
-      function (items) {
-        this.setState({
-          name: '',
-          numbers: items
-        });
-      }.bind(this),
-      function (err) {
-        console.log(err);
-      }
-    );
-  
+      );  
   },
   
   _onSortAZ: function (e) {
-    // by default, the form will be sent to the server
-    // but we want to handle it in JavaScript
     e.preventDefault();
     this.setState({
       numbers: this.state.numbers.sort()
@@ -63,8 +48,6 @@ var HelloWorld = React.createClass({
   },
   
   _onSortZA: function (e) {
-    // by default, the form will be sent to the server
-    // but we want to handle it in JavaScript
     e.preventDefault();
     this.setState({
       numbers: this.state.numbers.sort().reverse()
@@ -72,8 +55,6 @@ var HelloWorld = React.createClass({
   },
   
   _onRefresh: function (e) {
-    // by default, the form will be sent to the server
-    // but we want to handle it in JavaScript
     e.preventDefault();
     request('GET', '/items').getBody('utf8').then(JSON.parse).done(
       function (items) {
@@ -85,9 +66,7 @@ var HelloWorld = React.createClass({
         console.log(err);
       }
     );
-  
   },
-  
   
 
   render: function () {
@@ -165,7 +144,11 @@ var HelloWorld = React.createClass({
       }
     );
     }.bind(this), 5000);
-  }
+  },
+  
+  componentWillUnmount: function () {
+    clearInterval(this._interval);
+  },
 });
 
 ReactDOM.render(

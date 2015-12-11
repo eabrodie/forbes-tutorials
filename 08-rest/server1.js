@@ -29,7 +29,7 @@ app.get('/items', function (req, res, next) {
 app.put('/items/create', bodyParser.json(), function (req, res, next) {
   //console.dir(req.body);
   items.push(req.body.item);
-  //res.json(items);
+  res.json(items);
 });
 
 
