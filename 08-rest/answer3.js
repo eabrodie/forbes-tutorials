@@ -24,8 +24,8 @@ var HelloWorld = React.createClass({
   _onSubmit: function (e) {
     // by default, the form will be sent to the server
     // but we want to handle it in JavaScript
-    /*e.preventDefault();
-    this.setState({
+    e.preventDefault();
+    /*this.setState({
       numbers: this.state.numbers.concat(this.state.name),
       name: ''
     })*/
@@ -39,12 +39,24 @@ var HelloWorld = React.createClass({
           console.log(err);
         }
       );
+    request('GET', '/items').getBody('utf8').then(JSON.parse).done(
+      function (items) {
+        this.setState({
+          name: '',
+          numbers: items
+        });
+      }.bind(this),
+      function (err) {
+        console.log(err);
+      }
+    );
+  
   },
   
   _onSortAZ: function (e) {
     // by default, the form will be sent to the server
     // but we want to handle it in JavaScript
-    //e.preventDefault();
+    e.preventDefault();
     this.setState({
       numbers: this.state.numbers.sort()
     })
@@ -53,11 +65,30 @@ var HelloWorld = React.createClass({
   _onSortZA: function (e) {
     // by default, the form will be sent to the server
     // but we want to handle it in JavaScript
-    //e.preventDefault();
+    e.preventDefault();
     this.setState({
       numbers: this.state.numbers.sort().reverse()
     })
   },
+  
+  _onRefresh: function (e) {
+    // by default, the form will be sent to the server
+    // but we want to handle it in JavaScript
+    e.preventDefault();
+    request('GET', '/items').getBody('utf8').then(JSON.parse).done(
+      function (items) {
+        this.setState({
+          numbers: items
+        });
+      }.bind(this),
+      function (err) {
+        console.log(err);
+      }
+    );
+  
+  },
+  
+  
 
   render: function () {
     return React.createElement(
@@ -99,6 +130,11 @@ var HelloWorld = React.createClass({
         'button',
         {onClick: this._onSortZA},
         'Z-A'
+      ),
+      React.createElement(
+        'button',
+        {onClick: this._onRefresh},
+        'Refresh'
       )
     );
   },
@@ -114,6 +150,21 @@ var HelloWorld = React.createClass({
         console.log(err);
       }
     );
+    
+    this._interval = setInterval(function(){ 
+      // note that because we're calling `this.setState`,
+      // the function must be "bound"
+      request('GET', '/items').getBody('utf8').then(JSON.parse).done(
+      function (items) {
+        this.setState({
+          numbers: items
+        });
+      }.bind(this),
+      function (err) {
+        console.log(err);
+      }
+    );
+    }.bind(this), 5000);
   }
 });
 
